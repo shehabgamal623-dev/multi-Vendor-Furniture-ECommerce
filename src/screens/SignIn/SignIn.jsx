@@ -97,7 +97,7 @@ export const SignIn = () => {
     if (validateForm()) {
       try {
         const response = await api.post(
-          "/login-buyer",
+          "/auth/login-buyer",
           {
             username: phoneNumber,
             password: password,

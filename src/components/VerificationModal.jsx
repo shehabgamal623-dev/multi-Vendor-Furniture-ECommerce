@@ -85,7 +85,7 @@ export const VerificationModal = ({
 
     try {
       const response = await api.post(
-        "/send-otp",
+        "/auth/send-otp",
         null,
         {
           params: {
@@ -150,9 +150,9 @@ export const VerificationModal = ({
       };
 
       if (verificationType === "registration") {
-        endpoint = "/verify-buyer-registration";
+        endpoint = "/auth/verify-buyer-registration";
       } else if (verificationType === "login") {
-        endpoint = "/login-buyer-verify";
+        endpoint = "/auth/login-buyer-verify";
       } else if (verificationType === "forgot-password") {
         endpoint = "";
       }

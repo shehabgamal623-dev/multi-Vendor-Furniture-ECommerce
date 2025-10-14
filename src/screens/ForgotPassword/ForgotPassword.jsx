@@ -45,7 +45,7 @@ export const ForgotPassword = () => {
 
     try {
       const response = await api.post(
-        "/send-otp",
+        "/auth/send-otp",
         null,
         {
           params: {

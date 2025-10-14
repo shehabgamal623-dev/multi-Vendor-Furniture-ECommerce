@@ -173,10 +173,7 @@ export const Register = () => {
           password,
         };
 
-        const response = await api.post(
-          "/auth/register-buyer",
-          payload
-        );
+        const response = await api.post("api/auth/register-buyer", payload);
 
         console.log("✅ Registration successful:", response.data);
 

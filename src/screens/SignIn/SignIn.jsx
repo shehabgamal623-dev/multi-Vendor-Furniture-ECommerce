@@ -23,7 +23,6 @@ import { VerificationModal } from "../../components/VerificationModal";
 import api from "../../Api/Axios";
 import Swal from "sweetalert2";
 
-
 export const SignIn = () => {
   const { t, i18n } = useTranslation();
   const dispatch = useDispatch();
@@ -99,13 +98,10 @@ export const SignIn = () => {
 
     if (validateForm()) {
       try {
-        const response = await api.post(
-          "/auth/login-buyer",
-          {
-            username: phoneNumber,
-            password: password,
-          }
-        );
+        const response = await api.post("api/auth/login-buyer", {
+          username: phoneNumber,
+          password: password,
+        });
 
         const { email } = response.data;
         dispatch(setGlobalValue({ key: "username", value: phoneNumber }));
@@ -339,6 +335,7 @@ export const SignIn = () => {
                         .slice(0, 10);
                       setPhoneNumber(onlyDigits); */
                       setPhoneNumber(e.target.value);
+                      dispatch(setGlobalValue({ key: "phonenumber", value }));
                     }}
                     onBlur={() => handleFieldBlur("phoneNumber")}
                     className={`flex-1 border-0 bg-transparent p-0 focus-visible:ring-0 text-[#292929] font-['Cairo',Helvetica] ${
@@ -412,17 +409,29 @@ export const SignIn = () => {
                   </p>
                 )}
 
-                <button
-                  type="button"
-                  onClick={navigateToForgotPassword}
-                  className={`text-sm text-[#835f40] hover:text-[#6b4a32] underline transition-colors font-['Cairo',Helvetica] ${
-                    isRTL
-                      ? "self-end w-full text-right"
-                      : "self-start w-full text-left"
-                  }`}
-                >
-                  {t("forgotPassword")}
-                </button>
+                {phoneNumber.trim() ? (
+                  <button
+                    type="button"
+                    onClick={navigateToForgotPassword}
+                    className={`text-sm text-[#835f40] hover:text-[#6b4a32] underline transition-colors font-['Cairo',Helvetica] ${
+                      isRTL
+                        ? "self-end w-full text-right"
+                        : "self-start w-full text-left"
+                    }`}
+                  >
+                    {t("forgotPassword")}
+                  </button>
+                ) : (
+                  <span
+                    className={`text-sm text-gray-400 cursor-not-allowed font-['Cairo',Helvetica] ${
+                      isRTL
+                        ? "self-end w-full text-right"
+                        : "self-start w-full text-left"
+                    }`}
+                  >
+                    {t("forgotPassword")}
+                  </span>
+                )}
               </div>
 
               {/* Submit Button */}

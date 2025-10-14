@@ -412,29 +412,17 @@ export const SignIn = () => {
                   </p>
                 )}
 
-                {phoneNumber.trim() && phoneNumber.length === 10 ? (
-                  <button
-                    type="button"
-                    onClick={navigateToForgotPassword}
-                    className={`text-sm text-[#835f40] hover:text-[#6b4a32] underline transition-colors font-['Cairo',Helvetica] ${
-                      isRTL
-                        ? "self-end w-full text-right"
-                        : "self-start w-full text-left"
-                    }`}
-                  >
-                    {t("forgotPassword")}
-                  </button>
-                ) : (
-                  <span
-                    className={`text-sm text-gray-400 cursor-not-allowed font-['Cairo',Helvetica] ${
-                      isRTL
-                        ? "self-end w-full text-right"
-                        : "self-start w-full text-left"
-                    }`}
-                  >
-                    {t("forgotPassword")}
-                  </span>
-                )}
+                <button
+                  type="button"
+                  onClick={navigateToForgotPassword}
+                  className={`text-sm text-[#835f40] hover:text-[#6b4a32] underline transition-colors font-['Cairo',Helvetica] ${
+                    isRTL
+                      ? "self-end w-full text-right"
+                      : "self-start w-full text-left"
+                  }`}
+                >
+                  {t("forgotPassword")}
+                </button>
               </div>
 
               {/* Submit Button */}

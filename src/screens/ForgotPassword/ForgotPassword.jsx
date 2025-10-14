@@ -47,15 +47,11 @@ export const ForgotPassword = () => {
     setIsSubmitting(true);
 
     try {
-      const response = await api.post(
-        "/auth/send-otp",
-        null,
-        {
-          params: {
-            username: phoneNumber,
-          },
-        }
-      );
+      const response = await api.post("api/auth/send-otp", null, {
+        params: {
+          username: phoneNumber,
+        },
+      });
 
       dispatch(setGlobalValue({ key: "username", value: phoneNumber }));
       setShowVerificationModal(true);
@@ -63,7 +59,9 @@ export const ForgotPassword = () => {
       console.error("Error:", error);
       Swal.fire({
         title: t("errorTitle") || "Error",
-        text: error.response?.data?.message || "Something went wrong. Please try again.",
+        text:
+          error.response?.data?.message ||
+          "Something went wrong. Please try again.",
         icon: "error",
         confirmButtonText: t("ok"),
         confirmButtonColor: "#835f40",

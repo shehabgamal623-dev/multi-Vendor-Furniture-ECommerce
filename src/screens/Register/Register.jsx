@@ -744,6 +744,8 @@ export const Register = () => {
         isOpen={showVerificationModal}
         onClose={() => setShowVerificationModal(false)}
         email={email}
+        username={phoneNumber}
+        verificationType="registration"
       />
     </div>
   );

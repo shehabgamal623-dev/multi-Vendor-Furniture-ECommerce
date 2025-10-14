@@ -17,6 +17,7 @@ import { Card, CardContent } from "../../components/ui/card";
 import { Input } from "../../components/ui/input";
 import { Label } from "../../components/ui/label";
 import { LanguageToggle } from "../../components/LanguageToggle";
+import { VerificationModal } from "../../components/VerificationModal";
 import api from "../../Api/Axios";
 import Swal from "sweetalert2";
 
@@ -29,6 +30,8 @@ export const SignIn = () => {
   const [errors, setErrors] = useState({});
   const [touchedFields, setTouchedFields] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [showVerificationModal, setShowVerificationModal] = useState(false);
+  const [userEmail, setUserEmail] = useState("");
 
   const isRTL = i18n.language === "ar";
 
@@ -93,37 +96,18 @@ export const SignIn = () => {
 
     if (validateForm()) {
       try {
-        // ✅ Send phoneNumber as username for now
         const response = await api.post(
-          "/auth/login-buyer",
+          "/login-buyer",
           {
-            username: phoneNumber, // backend expects username
+            username: phoneNumber,
             password: password,
           }
         );
 
-        // ✅ Success alert
-        Swal.fire({
-          title: t("successTitle") || "Success!",
-          text: response.data.message || "Logged in successfully!",
-          icon: "success",
-          confirmButtonText: t("ok"),
-          confirmButtonColor: "#835f40",
-          customClass: {
-            popup: isRTL ? "swal-rtl" : "swal-ltr",
-            title: `font-['Cairo',Helvetica] ${
-              isRTL ? "text-right" : "text-left"
-            }`,
-            htmlContainer: `font-['Cairo',Helvetica] ${
-              isRTL ? "text-right" : "text-left"
-            }`,
-            confirmButton: `font-['Cairo',Helvetica]`,
-          },
-        }).then(() => {
-          window.location.href = "/home";
-        });
+        const { email } = response.data;
+        setUserEmail(email);
+        setShowVerificationModal(true);
 
-        // Clear saved form data
         localStorage.removeItem("signIn_phoneNumber");
       } catch (error) {
         console.error(
@@ -131,7 +115,6 @@ export const SignIn = () => {
           error.response?.data || error.message
         );
 
-        // ❌ Error alert
         Swal.fire({
           title: t("errorTitle") || "Login Failed",
           text:
@@ -152,6 +135,7 @@ export const SignIn = () => {
             confirmButton: `font-['Cairo',Helvetica]`,
           },
         });
+        setIsSubmitting(false);
       } finally {
         setIsSubmitting(false);
       }
@@ -486,6 +470,14 @@ export const SignIn = () => {
           </form>
         </div>
       </div>
+
+      <VerificationModal
+        isOpen={showVerificationModal}
+        onClose={() => setShowVerificationModal(false)}
+        email={userEmail}
+        username={phoneNumber}
+        verificationType="login"
+      />
     </div>
   );
 };

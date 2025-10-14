@@ -2,34 +2,36 @@ import React, { useState, useRef, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import Swal from "sweetalert2";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "./ui/dialog";
-import { Button } from "./ui/button";
 import api from "../Api/Axios";
-import { useSelector } from "react-redux";
 
-export const VerificationModal = ({ isOpen, onClose, email }) => {
+export const VerificationModal = ({
+  isOpen,
+  onClose,
+  email,
+  username,
+  verificationType = "registration",
+  onSuccess
+}) => {
   const { t, i18n } = useTranslation();
   const [verificationCode, setVerificationCode] = useState(["", "", "", ""]);
   const [timeLeft, setTimeLeft] = useState(60);
   const [canResend, setCanResend] = useState(false);
+  const [isVerifying, setIsVerifying] = useState(false);
   const inputRefs = useRef([]);
 
   const isRTL = i18n.language === "ar";
-  var username = useSelector((state) => state.global.username);
 
-  // Encrypt email function (simple masking for now)
   const encryptEmail = (email) => {
     if (!email) return "";
     const [localPart, domain] = email.split("@");
     if (!domain) return email;
 
-    // Keep first 2 characters, mask the rest
     const visiblePart = localPart.slice(0, 2);
     const maskedPart = "*".repeat(Math.max(0, localPart.length - 2));
 
     return `${visiblePart}${maskedPart}@${domain}`;
   };
 
-  // Timer effect
   useEffect(() => {
     if (isOpen && timeLeft > 0) {
       const timer = setTimeout(() => {
@@ -41,12 +43,12 @@ export const VerificationModal = ({ isOpen, onClose, email }) => {
     }
   }, [isOpen, timeLeft]);
 
-  // Reset timer when modal opens
   useEffect(() => {
     if (isOpen) {
       setTimeLeft(60);
       setCanResend(false);
       setVerificationCode(["", "", "", ""]);
+      setIsVerifying(false);
       setTimeout(() => {
         inputRefs.current[0]?.focus();
       }, 50);
@@ -62,13 +64,10 @@ export const VerificationModal = ({ isOpen, onClose, email }) => {
       inputRefs.current[index + 1]?.focus();
     }
 
-    // If all 4 digits are filled -> call handleVerify automatically
     if (newCode.every((digit) => digit !== "")) {
-      console.log("Code entered:", newCode.join(""));
       setTimeout(() => {
         handleVerify(newCode.join(""));
-      }, 2000);
-      console.log("handleVerify called");
+      }, 500);
     }
   };
 
@@ -85,18 +84,16 @@ export const VerificationModal = ({ isOpen, onClose, email }) => {
     inputRefs.current[0]?.focus();
 
     try {
-      // ✅ Call the backend API using query param (username)
       const response = await api.post(
-        "/auth/send-otp",
-        null, // no body
+        "/send-otp",
+        null,
         {
           params: {
-            username: username, // from Redux state
+            username: username,
           },
         }
       );
 
-      // ✅ Optional success alert
       Swal.fire({
         title: t("otpResentTitle") || "OTP Sent!",
         text:
@@ -116,15 +113,7 @@ export const VerificationModal = ({ isOpen, onClose, email }) => {
           confirmButton: `font-['Cairo',Helvetica]`,
         },
       });
-
-      console.log("✅ OTP resend response:", response.data);
     } catch (error) {
-      console.error(
-        "❌ Failed to resend OTP:",
-        error.response?.data || error.message
-      );
-
-      // ❌ Show error alert
       Swal.fire({
         title: t("errorTitle") || "Error",
         text:
@@ -148,29 +137,38 @@ export const VerificationModal = ({ isOpen, onClose, email }) => {
     }
   };
 
-  const handleVerify = async (number) => {
-    console.log("handleVerify function triggered");
-    const code = verificationCode.join("");
-    console.log("Verifying code:", code.length);
-    console.log(number);
-    if (number.length === 4) {
-      console.log("username" + username);
+  const handleVerify = async (code) => {
+    if (code.length !== 4 || isVerifying) return;
 
-      try {
-        const response = await api.post(
-          "/auth/verify-buyer-registration",
-          null, // no body
-          {
-            params: {
-              username: username,
-              otp: number,
-            },
-          }
-        );
+    setIsVerifying(true);
 
+    try {
+      let endpoint = "";
+      let params = {
+        username: username,
+        otp: code,
+      };
+
+      if (verificationType === "registration") {
+        endpoint = "/verify-buyer-registration";
+      } else if (verificationType === "login") {
+        endpoint = "/login-buyer-verify";
+      } else if (verificationType === "forgot-password") {
+        endpoint = "";
+      }
+
+      if (!endpoint) {
+        console.log("Endpoint not configured yet for:", verificationType);
+        setIsVerifying(false);
+        return;
+      }
+
+      const response = await api.post(endpoint, null, { params });
+
+      if (verificationType === "registration") {
         Swal.fire({
-          title: t("accountCreatedTitle"),
-          text: t("accountCreatedText"),
+          title: t("accountCreatedTitle") || "Account Created!",
+          text: t("accountCreatedText") || "Your account has been successfully created.",
           icon: "success",
           confirmButtonText: t("ok"),
           confirmButtonColor: "#835f40",
@@ -188,17 +186,101 @@ export const VerificationModal = ({ isOpen, onClose, email }) => {
           },
         }).then((result) => {
           if (result.isConfirmed) {
-            // Close the modal
             onClose();
-            // Navigate to sign in page
             window.location.href = "/";
           }
         });
-      } catch (error) {
-        console.error(error);
+      } else if (verificationType === "login") {
+        const { token, username: user, email: userEmail, role } = response.data;
+
+        localStorage.setItem("authToken", token);
+        localStorage.setItem("username", user);
+        localStorage.setItem("email", userEmail);
+        localStorage.setItem("role", role);
+
+        Swal.fire({
+          title: t("loginSuccessTitle") || "Login Successful!",
+          text: t("loginSuccessText") || "You have been successfully logged in.",
+          icon: "success",
+          confirmButtonText: t("ok"),
+          confirmButtonColor: "#835f40",
+          allowOutsideClick: false,
+          allowEscapeKey: false,
+          customClass: {
+            popup: isRTL ? "swal-rtl" : "swal-ltr",
+            title: `font-['Cairo',Helvetica] ${
+              isRTL ? "text-right" : "text-left"
+            }`,
+            htmlContainer: `font-['Cairo',Helvetica] ${
+              isRTL ? "text-right" : "text-left"
+            }`,
+            confirmButton: `font-['Cairo',Helvetica]`,
+          },
+        }).then((result) => {
+          if (result.isConfirmed) {
+            onClose();
+            window.location.href = "/home";
+          }
+        });
+      } else if (verificationType === "forgot-password") {
+        Swal.fire({
+          title: t("verificationSuccessTitle") || "Verification Successful!",
+          text: t("verificationSuccessText") || "OTP verified successfully.",
+          icon: "success",
+          confirmButtonText: t("ok"),
+          confirmButtonColor: "#835f40",
+          allowOutsideClick: false,
+          allowEscapeKey: false,
+          customClass: {
+            popup: isRTL ? "swal-rtl" : "swal-ltr",
+            title: `font-['Cairo',Helvetica] ${
+              isRTL ? "text-right" : "text-left"
+            }`,
+            htmlContainer: `font-['Cairo',Helvetica] ${
+              isRTL ? "text-right" : "text-left"
+            }`,
+            confirmButton: `font-['Cairo',Helvetica]`,
+          },
+        }).then((result) => {
+          if (result.isConfirmed) {
+            onClose();
+            window.location.href = "/reset-password";
+          }
+        });
       }
 
-      // Show success alert
+      if (onSuccess) {
+        onSuccess(response.data);
+      }
+
+    } catch (error) {
+      console.error("Verification error:", error);
+
+      Swal.fire({
+        title: t("errorTitle") || "Error",
+        text:
+          error.response?.data?.message ||
+          t("wrongOtpError") ||
+          "Wrong OTP code. Please try again.",
+        icon: "error",
+        confirmButtonText: t("ok"),
+        confirmButtonColor: "#835f40",
+        customClass: {
+          popup: isRTL ? "swal-rtl" : "swal-ltr",
+          title: `font-['Cairo',Helvetica] ${
+            isRTL ? "text-right" : "text-left"
+          }`,
+          htmlContainer: `font-['Cairo',Helvetica] ${
+            isRTL ? "text-right" : "text-left"
+          }`,
+          confirmButton: `font-['Cairo',Helvetica]`,
+        },
+      });
+
+      setVerificationCode(["", "", "", ""]);
+      inputRefs.current[0]?.focus();
+    } finally {
+      setIsVerifying(false);
     }
   };
 
@@ -222,7 +304,6 @@ export const VerificationModal = ({ isOpen, onClose, email }) => {
         onClose={onClose}
       >
         <div className="flex flex-col items-center justify-center h-full gap-6">
-          {/* Title */}
           <DialogHeader className="text-center">
             <DialogTitle
               className={`text-2xl lg:text-3xl font-semibold text-[#1a1713] font-['Cairo',Helvetica] ${
@@ -233,7 +314,6 @@ export const VerificationModal = ({ isOpen, onClose, email }) => {
             </DialogTitle>
           </DialogHeader>
 
-          {/* Description */}
           <div className="text-center max-w-md">
             <p
               className={`text-base lg:text-lg text-[#666] font-['Cairo',Helvetica] leading-relaxed ${
@@ -251,7 +331,6 @@ export const VerificationModal = ({ isOpen, onClose, email }) => {
             </p>
           </div>
 
-          {/* Verification Code Inputs */}
           <div
             className="flex gap-4 justify-center items-center"
             style={{ direction: "ltr" }}
@@ -272,13 +351,15 @@ export const VerificationModal = ({ isOpen, onClose, email }) => {
                   )
                 }
                 onKeyDown={(e) => handleKeyDown(index, e)}
-                className={`w-16 h-16 lg:w-20 lg:h-20 text-center text-2xl font-bold border-2 border-[#c3c3c3] rounded-[10px] focus:border-[#835f40] focus:outline-none transition-colors font-['Cairo',Helvetica]`}
+                disabled={isVerifying}
+                className={`w-16 h-16 lg:w-20 lg:h-20 text-center text-2xl font-bold border-2 border-[#c3c3c3] rounded-[10px] focus:border-[#835f40] focus:outline-none transition-colors font-['Cairo',Helvetica] ${
+                  isVerifying ? "opacity-50 cursor-not-allowed" : ""
+                }`}
                 dir="ltr"
               />
             ))}
           </div>
 
-          {/* Timer */}
           <div className="text-center">
             <p
               className={`text-sm lg:text-base text-[#666] font-['Cairo',Helvetica] ${
@@ -289,7 +370,6 @@ export const VerificationModal = ({ isOpen, onClose, email }) => {
             </p>
           </div>
 
-          {/* Resend Button */}
           <div className="text-center">
             {canResend ? (
               <button

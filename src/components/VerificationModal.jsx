@@ -10,7 +10,7 @@ export const VerificationModal = ({
   onClose,
   email,
   verificationType = "registration",
-  onSuccess
+  onSuccess,
 }) => {
   const { t, i18n } = useTranslation();
   const username = useSelector((state) => state.global.username);
@@ -85,15 +85,11 @@ export const VerificationModal = ({
     inputRefs.current[0]?.focus();
 
     try {
-      const response = await api.post(
-        "/auth/send-otp",
-        null,
-        {
-          params: {
-            username: username,
-          },
-        }
-      );
+      const response = await api.post("api/auth/send-otp", null, {
+        params: {
+          username: username,
+        },
+      });
 
       Swal.fire({
         title: t("otpResentTitle") || "OTP Sent!",
@@ -151,11 +147,11 @@ export const VerificationModal = ({
       };
 
       if (verificationType === "registration") {
-        endpoint = "/auth/verify-buyer-registration";
+        endpoint = "api/auth/verify-buyer-registration";
       } else if (verificationType === "login") {
-        endpoint = "/auth/login-buyer-verify";
+        endpoint = "api/auth/login-buyer-verify";
       } else if (verificationType === "forgot-password") {
-        endpoint = "";
+        endpoint = "api/auth/verify-otp";
       }
 
       if (!endpoint) {
@@ -169,7 +165,9 @@ export const VerificationModal = ({
       if (verificationType === "registration") {
         Swal.fire({
           title: t("accountCreatedTitle") || "Account Created!",
-          text: t("accountCreatedText") || "Your account has been successfully created.",
+          text:
+            t("accountCreatedText") ||
+            "Your account has been successfully created.",
           icon: "success",
           confirmButtonText: t("ok"),
           confirmButtonColor: "#835f40",
@@ -201,7 +199,8 @@ export const VerificationModal = ({
 
         Swal.fire({
           title: t("loginSuccessTitle") || "Login Successful!",
-          text: t("loginSuccessText") || "You have been successfully logged in.",
+          text:
+            t("loginSuccessText") || "You have been successfully logged in.",
           icon: "success",
           confirmButtonText: t("ok"),
           confirmButtonColor: "#835f40",
@@ -253,7 +252,6 @@ export const VerificationModal = ({
       if (onSuccess) {
         onSuccess(response.data);
       }
-
     } catch (error) {
       console.error("Verification error:", error);
 

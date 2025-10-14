@@ -20,14 +20,15 @@ import Swal from "sweetalert2";
 export const ForgotPassword = () => {
   const { t, i18n } = useTranslation();
   const dispatch = useDispatch();
+  const showVerificationModal = useSelector((state) => state.global.showVerificationModal);
+  const isSubmitting = useSelector((state) => state.global.isSubmitting);
+
   const [selectedMethod, setSelectedMethod] = useState("sms");
   const [phoneNumber, setPhoneNumber] = useState(() => {
     const savedPhone = localStorage.getItem("forgotPassword_phoneNumber");
     return savedPhone;
   });
   const [email, setEmail] = useState("user@gmail.com");
-  const [showVerificationModal, setShowVerificationModal] = useState(false);
-  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const isRTL = i18n.language === "ar";
 
@@ -44,7 +45,7 @@ export const ForgotPassword = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setIsSubmitting(true);
+    dispatch(setIsSubmitting(true));
 
     try {
       const response = await api.post("api/auth/send-otp", null, {
@@ -54,7 +55,8 @@ export const ForgotPassword = () => {
       });
 
       dispatch(setGlobalValue({ key: "username", value: phoneNumber }));
-      setShowVerificationModal(true);
+      dispatch(setGlobalValue({ key: "phoneNumber", value: phoneNumber }));
+      dispatch(setShowVerificationModal(true));
     } catch (error) {
       console.error("Error:", error);
       Swal.fire({
@@ -77,7 +79,7 @@ export const ForgotPassword = () => {
         },
       });
     } finally {
-      setIsSubmitting(false);
+      dispatch(setIsSubmitting(false));
     }
   };
 
@@ -320,7 +322,7 @@ export const ForgotPassword = () => {
 
       <VerificationModal
         isOpen={showVerificationModal}
-        onClose={() => setShowVerificationModal(false)}
+        onClose={() => dispatch(setShowVerificationModal(false))}
         email={email}
         verificationType="forgot-password"
       />

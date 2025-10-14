@@ -44,6 +44,16 @@ export const ForgotPassword = () => {
     setIsSubmitting(true);
 
     try {
+      const response = await api.post(
+        "/send-otp",
+        null,
+        {
+          params: {
+            username: phoneNumber,
+          },
+        }
+      );
+
       setShowVerificationModal(true);
     } catch (error) {
       console.error("Error:", error);

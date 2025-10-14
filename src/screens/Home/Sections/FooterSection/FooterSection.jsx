@@ -12,7 +12,7 @@ import { Input } from "../../../../components/ui/input";
 
 export const FooterSection = () => {
   const { t, i18n } = useTranslation();
-  const isRTL = i18n.language === "ar";
+  const isArabic = i18n.language === "ar";
   const [email, setEmail] = useState("");
 
   const handleNewsletterSubmit = (e) => {
@@ -36,41 +36,17 @@ export const FooterSection = () => {
   };
 
   return (
-    <footer className="bg-[#F5F5F5] relative overflow-hidden">
-      <div className="absolute inset-0 opacity-5 pointer-events-none">
-        <svg width="100%" height="100%" className="text-[#A67C52]">
-          <defs>
-            <pattern
-              id="footer-pattern"
-              x="0"
-              y="0"
-              width="200"
-              height="200"
-              patternUnits="userSpaceOnUse"
-            >
-              <circle
-                cx="50"
-                cy="50"
-                r="40"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="1"
-              />
-              <path
-                d="M50 10 L50 90 M10 50 L90 50"
-                stroke="currentColor"
-                strokeWidth="1"
-              />
-            </pattern>
-          </defs>
-          <rect width="100%" height="100%" fill="url(#footer-pattern)" />
-        </svg>
-      </div>
-
+    <footer
+      className="bg-[url('/footer-bg-mobile.png')] md:bg-[url('/footer-bg.png')]
+        bg-cover bg-center bg-no-repeat relative overflow-hidden"
+    >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 relative">
-        <div className="bg-gradient-to-br from-[#A67C52] to-[#8B6841] rounded-2xl p-8 mb-12 shadow-lg">
+        <div className="bg-[#F3EFEC] rounded-3xl p-8 mb-12 ">
           <div className="flex flex-col md:flex-row items-center justify-between gap-6">
-            <h3 className="text-white text-xl md:text-2xl font-bold">
+            <h3
+              className="text-[#1A1713] text-xl md:text-2xl font-medium"
+              style={{ fontFamily: "Cairo" }}
+            >
               {t("footer_newsletter_title")}
             </h3>
             <form
@@ -84,7 +60,7 @@ export const FooterSection = () => {
                 onChange={(e) => setEmail(e.target.value)}
                 required
                 className={`bg-white border-none rounded-lg px-6 py-6 w-full md:w-80 text-gray-800 placeholder:text-gray-400 focus:ring-2 focus:ring-white ${
-                  isRTL ? "text-right" : "text-left"
+                  isArabic ? "text-right" : "text-left"
                 }`}
               />
               <Button
@@ -100,7 +76,13 @@ export const FooterSection = () => {
         <div className="grid grid-cols-1 md:grid-cols-4 gap-12 mb-8">
           <div className="space-y-6">
             <div className="flex items-center gap-3">
-              <div className="w-12 h-12 bg-[#A67C52] rounded-lg flex items-center justify-center">
+              <div
+                className={`w-12 h-12 rounded-lg flex items-center justify-center  ${
+                  isArabic
+                    ? "bg-[linear-gradient(270deg,#805B3C_0%,#D3BAA4_100%)]"
+                    : "bg-[linear-gradient(90deg,#805B3C_0%,#D3BAA4_100%)]"
+                }`}
+              >
                 <span className="text-white font-bold text-xl">F</span>
               </div>
               <span className="text-[#A67C52] font-bold text-2xl">
@@ -160,7 +142,7 @@ export const FooterSection = () => {
                 <div className="w-10 h-10 bg-white rounded-lg flex items-center justify-center shadow-sm">
                   <FaPhone className="text-[#A67C52]" />
                 </div>
-                <span className={isRTL ? "font-arabic" : ""}>
+                <span className={isArabic ? "font-arabic" : ""}>
                   {t("footer_phone")}
                 </span>
               </a>

@@ -2,7 +2,7 @@ import axios from "axios";
 
 // Create Axios instance
 const api = axios.create({
-  baseURL: "/api", // Use proxy path instead of direct localhost URL
+  baseURL: "http://localhost:8080", // change this to your backend base URL
 });
 
 // Request Interceptor

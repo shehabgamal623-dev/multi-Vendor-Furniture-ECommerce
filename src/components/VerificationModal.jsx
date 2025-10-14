@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect } from "react";
 import { useTranslation } from "react-i18next";
+import { useSelector } from "react-redux";
 import Swal from "sweetalert2";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "./ui/dialog";
 import api from "../Api/Axios";
@@ -8,11 +9,11 @@ export const VerificationModal = ({
   isOpen,
   onClose,
   email,
-  username,
   verificationType = "registration",
   onSuccess
 }) => {
   const { t, i18n } = useTranslation();
+  const username = useSelector((state) => state.global.username);
   const [verificationCode, setVerificationCode] = useState(["", "", "", ""]);
   const [timeLeft, setTimeLeft] = useState(60);
   const [canResend, setCanResend] = useState(false);

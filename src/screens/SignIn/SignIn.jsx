@@ -7,6 +7,8 @@ import {
 import { HiOutlineArrowLeft, HiOutlineArrowRight } from "react-icons/hi2";
 import React, { useState } from "react";
 import { useTranslation } from "react-i18next";
+import { useDispatch } from "react-redux";
+import { setGlobalValue } from "../../Store/Store";
 import {
   Avatar,
   AvatarFallback,
@@ -24,6 +26,7 @@ import Swal from "sweetalert2";
 
 export const SignIn = () => {
   const { t, i18n } = useTranslation();
+  const dispatch = useDispatch();
   const [showPassword, setShowPassword] = useState(false);
   const [phoneNumber, setPhoneNumber] = useState("");
   const [password, setPassword] = useState("");
@@ -105,6 +108,7 @@ export const SignIn = () => {
         );
 
         const { email } = response.data;
+        dispatch(setGlobalValue({ key: "username", value: phoneNumber }));
         setUserEmail(email);
         setShowVerificationModal(true);
 
@@ -475,7 +479,6 @@ export const SignIn = () => {
         isOpen={showVerificationModal}
         onClose={() => setShowVerificationModal(false)}
         email={userEmail}
-        username={phoneNumber}
         verificationType="login"
       />
     </div>

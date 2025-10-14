@@ -38,7 +38,6 @@ export const Register = () => {
   const [touchedFields, setTouchedFields] = useState({});
   const [showVerificationModal, setShowVerificationModal] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [registeredUsername, setRegisteredUsername] = useState("");
 
   const isRTL = i18n.language === "ar";
   const validateForm = React.useCallback(() => {
@@ -150,7 +149,6 @@ export const Register = () => {
     console.log(username);
 
     dispatch(setGlobalValue({ key: "username", value: username }));
-    setRegisteredUsername(username);
 
     // Mark all fields as touched to show validation errors
     setTouchedFields({
@@ -746,7 +744,6 @@ export const Register = () => {
         isOpen={showVerificationModal}
         onClose={() => setShowVerificationModal(false)}
         email={email}
-        username={registeredUsername}
         verificationType="registration"
       />
     </div>

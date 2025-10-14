@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
+import { useDispatch } from "react-redux";
+import { setGlobalValue } from "../../Store/Store";
 import { ChevronRight as ChevronRightIcon, Mail } from "lucide-react";
 import { RiMailSendLine } from "react-icons/ri";
 import { LuMessageCircleMore } from "react-icons/lu";
@@ -17,6 +19,7 @@ import Swal from "sweetalert2";
 
 export const ForgotPassword = () => {
   const { t, i18n } = useTranslation();
+  const dispatch = useDispatch();
   const [selectedMethod, setSelectedMethod] = useState("sms");
   const [phoneNumber, setPhoneNumber] = useState(() => {
     const savedPhone = localStorage.getItem("forgotPassword_phoneNumber");
@@ -54,6 +57,7 @@ export const ForgotPassword = () => {
         }
       );
 
+      dispatch(setGlobalValue({ key: "username", value: phoneNumber }));
       setShowVerificationModal(true);
     } catch (error) {
       console.error("Error:", error);
@@ -320,7 +324,6 @@ export const ForgotPassword = () => {
         isOpen={showVerificationModal}
         onClose={() => setShowVerificationModal(false)}
         email={email}
-        username={phoneNumber}
         verificationType="forgot-password"
       />
 

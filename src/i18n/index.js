@@ -117,6 +117,21 @@ const resources = {
       footer_description:
         "تصفح الآن مع موقعنا لـي تعيش تجربة تسوق حقيقية والبقاء متواصل معنا لأفضل تجارب عملاء",
       footer_copyright: "جميع الحقوق محفوظة",
+      //hero section
+      hero: {
+        title: "أكبر تجربة تسوّق أثاث في السعودية",
+        description:
+          "منصة متكاملة تجمع أبرز متاجر الأثاث والعلامات الموثوقة في المملكة، حيث تجد كل ما تحتاجه لتأثيث منزلك في مكان واحد. استمتع بآلاف الخيارات التي تناسب مختلف الأذواق والميزانيات، مع تجربة تسوّق سهلة، وخدمات توصيل مريحة تصل إلى باب منزلك في جميع أنحاء المملكة.",
+        searchPlaceholder: "ابحث عن ما تريد",
+        searchButton: "بحث",
+        happyClients: "عميل سعيد بخدمتنا",
+        mobileTitle: "اختر أثاثك... وجربه في منزلك قبل الشراء",
+        mobileDescription:
+          "اكتشف مجموعتنا الواسعة من الأثاث الفاخر، وجرّب كل قطعة في مساحتك الخاصة بتقنية الواقع المعزز AR. تجربة تسوّق ذكية وسهلة من أي مكان.",
+        ctaBrowse: "استعرض المنتجات",
+        ctaBestSellers: "الأكثر مبيعًا",
+        happyClientsShort: "عميل سعيد",
+      },
     },
   },
   en: {
@@ -234,6 +249,22 @@ const resources = {
       footer_description:
         "Browse now with our website to experience real shopping and stay connected with us for the best customer experiences",
       footer_copyright: "All Rights Reserved",
+      //hero section
+      hero: {
+        title: "The Largest Furniture Shopping Experience in Saudi Arabia",
+        description:
+          "An all-in-one platform bringing together the top furniture stores and trusted brands in the Kingdom. Find everything you need to furnish your home in one place. Enjoy thousands of options to suit all tastes and budgets, with an easy shopping experience and convenient delivery to your doorstep across Saudi Arabia.",
+        searchPlaceholder: "Search for what you need",
+        searchButton: "Search",
+        happyClients: "Happy customers with our service",
+        mobileTitle:
+          "Choose your furniture... and try it in your home before buying",
+        mobileDescription:
+          "Discover our wide range of luxury furniture, and experience each piece in your space with AR technology. A smart and easy shopping experience from anywhere.",
+        ctaBrowse: "Browse Products",
+        ctaBestSellers: "Best Sellers",
+        happyClientsShort: "Happy Clients",
+      },
     },
   },
 };

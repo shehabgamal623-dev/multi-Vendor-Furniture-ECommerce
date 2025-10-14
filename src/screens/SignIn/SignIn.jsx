@@ -17,7 +17,7 @@ import { Card, CardContent } from "../../components/ui/card";
 import { Input } from "../../components/ui/input";
 import { Label } from "../../components/ui/label";
 import { LanguageToggle } from "../../components/LanguageToggle";
-import axios from "axios";
+import api from "../../Api/Axios";
 import Swal from "sweetalert2";
 
 
@@ -94,16 +94,11 @@ export const SignIn = () => {
     if (validateForm()) {
       try {
         // ✅ Send phoneNumber as username for now
-        const response = await axios.post(
-          "http://localhost:8080/api/auth/login-buyer",
+        const response = await api.post(
+          "/auth/login-buyer",
           {
             username: phoneNumber, // backend expects username
             password: password,
-          },
-          {
-            headers: {
-              "Content-Type": "application/json",
-            },
           }
         );
 

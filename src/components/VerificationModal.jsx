@@ -3,7 +3,7 @@ import { useTranslation } from "react-i18next";
 import Swal from "sweetalert2";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "./ui/dialog";
 import { Button } from "./ui/button";
-import axios from "axios";
+import api from "../Api/Axios";
 import { useSelector } from "react-redux";
 
 export const VerificationModal = ({ isOpen, onClose, email }) => {
@@ -86,8 +86,8 @@ export const VerificationModal = ({ isOpen, onClose, email }) => {
 
     try {
       // ✅ Call the backend API using query param (username)
-      const response = await axios.post(
-        "http://localhost:8080/api/auth/send-otp",
+      const response = await api.post(
+        "/auth/send-otp",
         null, // no body
         {
           params: {
@@ -157,8 +157,8 @@ export const VerificationModal = ({ isOpen, onClose, email }) => {
       console.log("username" + username);
 
       try {
-        const response = await axios.post(
-          "http://localhost:8080/api/auth/verify-buyer-registration",
+        const response = await api.post(
+          "/auth/verify-buyer-registration",
           null, // no body
           {
             params: {
